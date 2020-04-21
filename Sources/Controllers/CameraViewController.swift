@@ -66,16 +66,16 @@ public final class CameraViewController: UIViewController {
         captureDevice.unlockForConfiguration()
       } catch {}
 
-      flashButton.setImage(torchMode.image, for: UIControlState())
+      flashButton.setImage(torchMode.image, for: UIControl.State())
     }
   }
 
   private var frontCameraDevice: AVCaptureDevice? {
-    return AVCaptureDevice.devices(for: .video).first(where: { $0.position == .front })
+    return AVCaptureDevice.default(.builtInWideAngleCamera, for: AVMediaType.video, position: .front)
   }
 
   private var backCameraDevice: AVCaptureDevice? {
-    return AVCaptureDevice.default(for: .video)
+    return AVCaptureDevice.default(.builtInWideAngleCamera, for: AVMediaType.video, position: .back)
   }
 
   // MARK: - Initialization
@@ -173,7 +173,7 @@ public final class CameraViewController: UIViewController {
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(appWillEnterForeground),
-      name: NSNotification.Name.UIApplicationWillEnterForeground,
+      name: UIApplication.willEnterForegroundNotification,
       object: nil
     )
   }
@@ -377,7 +377,15 @@ private extension CameraViewController {
     videoPreviewLayer.frame = view.layer.bounds
 
     if let connection = videoPreviewLayer.connection, connection.isVideoOrientationSupported {
-      switch UIApplication.shared.statusBarOrientation {
+      var statusBarOrientation: UIInterfaceOrientation? {
+        get {
+          guard let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
+            return nil
+          }
+          return orientation
+        }
+      }
+      switch statusBarOrientation {
       case .portrait:
         connection.videoOrientation = .portrait
       case .landscapeRight:
@@ -415,14 +423,14 @@ private extension CameraViewController {
       string: localizedString("BUTTON_SETTINGS"),
       attributes: [.font: UIFont.boldSystemFont(ofSize: 17), .foregroundColor: UIColor.white]
     )
-    button.setAttributedTitle(title, for: UIControlState())
+    button.setAttributedTitle(title, for: UIControl.State())
     button.sizeToFit()
     return button
   }
 
   func makeCameraButton() -> UIButton {
     let button = UIButton(type: .custom)
-    button.setImage(imageNamed("cameraRotate"), for: UIControlState())
+    button.setImage(imageNamed("cameraRotate"), for: UIControl.State())
     button.isHidden = !showsCameraButton
     return button
   }
