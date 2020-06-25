@@ -75,6 +75,7 @@ public final class CameraViewController: UIViewController {
         return AVCaptureDevice.default(.builtInWideAngleCamera, for: AVMediaType.video, position: .front)
     } else {
         // Fallback on earlier versions
+        return nil
     }
   }
 
@@ -83,6 +84,7 @@ public final class CameraViewController: UIViewController {
         return AVCaptureDevice.default(.builtInWideAngleCamera, for: AVMediaType.video, position: .back)
     } else {
         // Fallback on earlier versions
+        return nil
     }
   }
 
@@ -391,10 +393,11 @@ private extension CameraViewController {
                 guard let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
                     return nil
                 }
+                return orientation
             } else {
                 // Fallback on earlier versions
+                return nil
             }
-          return orientation
         }
       }
       switch statusBarOrientation {
