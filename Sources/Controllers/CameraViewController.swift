@@ -71,11 +71,19 @@ public final class CameraViewController: UIViewController {
   }
 
   private var frontCameraDevice: AVCaptureDevice? {
-    return AVCaptureDevice.default(.builtInWideAngleCamera, for: AVMediaType.video, position: .front)
+    if #available(iOS 10.0, *) {
+        return AVCaptureDevice.default(.builtInWideAngleCamera, for: AVMediaType.video, position: .front)
+    } else {
+        // Fallback on earlier versions
+    }
   }
 
   private var backCameraDevice: AVCaptureDevice? {
-    return AVCaptureDevice.default(.builtInWideAngleCamera, for: AVMediaType.video, position: .back)
+    if #available(iOS 10.0, *) {
+        return AVCaptureDevice.default(.builtInWideAngleCamera, for: AVMediaType.video, position: .back)
+    } else {
+        // Fallback on earlier versions
+    }
   }
 
   // MARK: - Initialization
@@ -379,9 +387,13 @@ private extension CameraViewController {
     if let connection = videoPreviewLayer.connection, connection.isVideoOrientationSupported {
       var statusBarOrientation: UIInterfaceOrientation? {
         get {
-          guard let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
-            return nil
-          }
+            if #available(iOS 13.0, *) {
+                guard let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
+                    return nil
+                }
+            } else {
+                // Fallback on earlier versions
+            }
           return orientation
         }
       }
